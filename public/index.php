@@ -1,34 +1,43 @@
 <?php
 
-require __DIR__ .'/../vendor/autoload.php'; // Load the classes into memory
+require __DIR__ . '/../vendor/autoload.php'; // Autoload dependencies and classes
 
-use Framework\Kernel; // IMPORT the class
+use App\RouteProvider;
+use App\ServiceProvider;
+use Framework\Kernel;
 use Framework\Request;
-use Framework\Response;
 
 // This is the front controller.
 
+// Boot
 $kernel = new Kernel();
 
-// Define some routes
-$router = $kernel->getRouter();
-$router->addRoute("GET","/", "Welcome to Taskey");
-$router->addRoute("GET","/about","This is Noodle's Taskey");
+// Register services (controllers)
+$kernel->registerServices(new ServiceProvider());
 
-// $_SERVER['REQUEST_URI']`: What the browser request, contains path + query string. "/..."
-// parse_url: Extract only the path, ex: /tasks?done=1 --> /tasks
+// Register routes (using controllers from container)
+$kernel->registerRoutes(new RouteProvider());
 
+// Get Request data from the global variables
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+// Extract the path from the URL
 $urlPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if (!is_string($urlPath)) {
-    $urlPath = "/";
+    $urlPath = '/';
 }
 
-/* PARAMETERS EXPLAINED:
- * $_SERVER['REQUEST_METHOD'] → "GET", "POST"
- * $_GET: query parameters: /tasks?done=1 gives ['done' => '1']
- */
-$request = new Request($_SERVER['REQUEST_METHOD'], $urlPath, $_GET, $_POST);
+// Get query (GET) parameters
+$queryParams = $_GET;
 
+// Get POST data
+$postData = $_POST;
+
+// Create the Request object
+$request = new Request($method, $urlPath, $queryParams, $postData);
+
+// Handle the request and get the response
 $response = $kernel->handle($request);
 
+// Send the response to the client
 $response->echo();

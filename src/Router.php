@@ -5,34 +5,48 @@ namespace Framework;
 class Router
 {
     /** @var Route[] */
-    private array $routes;
+    private array $routes = [];
 
-    public function __construct() {
-
+    public function __construct()
+    {
     }
 
-    public function dispatch(Request $request): Response {
-        $matchedRoute = null;
-        // Loop through routes array to find a match, then break out of the loop.
+    /**
+     * Dispatch the Request to the appropriate route and return a Response.
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function dispatch(Request $request): Response
+    {
         foreach ($this->routes as $route) {
             if ($route->matches($request->method, $request->path)) {
-                $matchedRoute = $route;
-                break;
+                $callback = $route->callback;
+                $response = $callback();
+                return $response;
             }
         }
-        // If nothing is matches, return 404 with a message.
-        if ($matchedRoute === null) {
-            // Route not found, return 404
-            return $response = new Response("Page not found", 404);
-        }
 
-        // When matches, create a new response and return it.
-        $response = new Response($matchedRoute->return);
+        // No matching route found, return a 404 response
+        $response = new Response();
+        $response->responseCode = 404;
+        $response->body = "Page not found";
         return $response;
     }
 
-    public function addRoute(string $method, string $path, string $return): void {
+    /**
+     * Add a new route to the router.
+     *
+     * @param string $method HTTP method
+     * @param string $path URL path
+     * @param callable $callback Callback function to handle the route
+     * @return void
+     */
+    public function addRoute(string $method, string $path, callable $callback): void
+    {
+
+        $route = new Route($method, $path, $callback);
         // Push function
-        $this->routes[] = new Route($method, $path, $return);
+        $this->routes[] = $route;
     }
 }

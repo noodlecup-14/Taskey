@@ -2,7 +2,8 @@
 
 namespace Framework;
 
-class Request {
+class Request
+{
     public string $method;
 
     public string $path;
@@ -30,20 +31,4 @@ class Request {
         $this->queryParameters = $queryParameters;
         $this->postParameters = $postParameters;
     }
-
-//    public function getMethod(): string {
-//        return $this->method;
-//    }
-//
-//    public function getPath(): string {
-//        return $this->path;
-//    }
-//
-//    public function getQueryParameters(): array {
-//        return $this->queryParameters;
-//    }
-//
-//    public function getPostParameters(): array {
-//        return $this->postParameters;
-//    }
 }
