@@ -10,15 +10,29 @@ class Kernel
 
     private ServiceContainer $container;
 
-    public function __construct()
+    private ConfigManager $configManager;
+
+    /**
+     * @param string[] $config
+     * @throws \Exception
+     */
+    public function __construct(array $config)
     {
-        $this->router = new Router();
         $this->container = new ServiceContainer();
+
+        $this->configManager = new ConfigManager($config);
+
+        $debugMode = $this->configManager->get('APP_ENV') != 'production';
+        $viewsPath = $this->configManager->get('VIEWS_PATH');
+        $responseFactory = new ResponseFactory($debugMode, $viewsPath);
+        $this->container->set(ResponseFactory::class, $responseFactory);
+
+        $this->router = new Router($responseFactory);
     }
 
-    public function registerRoutes(RouteProviderInterface $routeProvider): void
+    public function registerRoutes(RouteProviderInterface $routerProvider): void
     {
-        $routeProvider->register($this->router, $this->container);
+        $routerProvider->register($this->router, $this->container);
     }
 
     public function registerServices(ServiceProviderInterface $serviceProvider): void
@@ -37,4 +51,3 @@ class Kernel
         return $this->router->dispatch($request);
     }
 }
-

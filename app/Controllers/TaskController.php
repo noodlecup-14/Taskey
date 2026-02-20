@@ -3,20 +3,23 @@
 namespace App\Controllers;
 
 use Framework\Response;
+use Framework\ResponseFactory;
 
 class TaskController
 {
+    private ResponseFactory $responseFactory;
+
+    public function __construct(ResponseFactory $responseFactory)
+    {
+        $this->responseFactory = $responseFactory;
+    }
     public function index(): Response
     {
-        $response = new Response();
-        $response->body = "List all tasks";
-        return $response;
+        return $this->responseFactory->view("tasks/index.html.twig");
     }
 
     public function create(): Response
     {
-        $response = new Response();
-        $response->body = "Create new task";
-        return $response;
+        return $this->responseFactory->view("tasks/create.html.twig");
     }
 }

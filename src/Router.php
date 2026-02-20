@@ -7,8 +7,11 @@ class Router
     /** @var Route[] */
     private array $routes = [];
 
-    public function __construct()
+    private ResponseFactory $responseFactory;
+
+    public function __construct(ResponseFactory $responseFactory)
     {
+        $this->responseFactory = $responseFactory;
     }
 
     /**
@@ -28,10 +31,7 @@ class Router
         }
 
         // No matching route found, return a 404 response
-        $response = new Response();
-        $response->responseCode = 404;
-        $response->body = "Page not found";
-        return $response;
+        return $this->responseFactory->notFound();
     }
 
     /**

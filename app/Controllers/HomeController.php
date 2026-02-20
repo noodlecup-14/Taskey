@@ -3,20 +3,24 @@
 namespace App\Controllers;
 
 use Framework\Response;
+use Framework\ResponseFactory;
 
 class HomeController
 {
+    private ResponseFactory $responseFactory;
+
+    public function __construct(ResponseFactory $responseFactory)
+    {
+        $this->responseFactory = $responseFactory;
+    }
+
     public function index(): Response
     {
-        $response = new Response();
-        $response->body = "Home page";
-        return $response;
+        return $this->responseFactory->view("index.html.twig");
     }
 
     public function about(): Response
     {
-        $response = new Response();
-        $response->body = "About page";
-        return $response;
+        return $this->responseFactory->view("about.html.twig");
     }
 }

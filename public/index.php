@@ -7,10 +7,15 @@ use App\ServiceProvider;
 use Framework\Kernel;
 use Framework\Request;
 
+$config = array (
+    'APP_ENV' => 'development',
+    'VIEWS_PATH' => 'app/views'
+);
+
 // This is the front controller.
 
 // Boot
-$kernel = new Kernel();
+$kernel = new Kernel($config);
 
 // Register services (controllers)
 $kernel->registerServices(new ServiceProvider());
